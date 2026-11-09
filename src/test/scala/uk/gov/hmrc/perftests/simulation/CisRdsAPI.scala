@@ -29,7 +29,7 @@ trait CisRdsAPI extends PerformanceTestRunner with BaseRequests {
         getClientListStatus,
         getClientList,
         hasClient,
-//        getCisTaxpayer,
+        getCisTaxpayer,
         getContractorPrepop,
         getSubcontractorPrepop
       )

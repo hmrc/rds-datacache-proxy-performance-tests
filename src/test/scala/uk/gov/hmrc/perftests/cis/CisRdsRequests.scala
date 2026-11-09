@@ -24,7 +24,14 @@ import uk.gov.hmrc.perftests.BaseRequests
 
 object CisRdsRequests extends ServicesConfiguration with BaseRequests {
 
-  val getCisTaxpayerUrl: String      = s"$rdsCisUrl/"
+  private val useStub: Boolean =
+    sys.props.get("useStub").exists(_.toBoolean)
+
+  val getCisTaxpayerUrl: String =
+    if (useStub)
+      s"$rdsHost/rds-datacache-proxy/cis-taxpayer"
+    else
+      s"$rdsHost/rds-datacache-proxy/cis/"
   val getClientListStatusUrl: String = s"$rdsCisUrl/client-list-status"
   val getClientListUrl: String       = s"$rdsCisUrl/client-list"
   val hasClientUrl: String           = s"$rdsCisUrl/has-client"
@@ -63,20 +70,20 @@ object CisRdsRequests extends ServicesConfiguration with BaseRequests {
       .headers(commonHeaders)
       .check(status.is(200))
 
-//  val getCisTaxpayer: HttpRequestBuilder =
-//    http("POST Get CIS taxpayer")
-//      .post(getCisTaxpayerUrl)
-//      .headers(commonHeaders)
-//      .body(
-//        StringBody(
-//          """{
-//            |  "taxOfficeNumber": "754",
-//            |  "taxOfficeReference": "EZ10800"
-//            |}""".stripMargin
-//        )
-//      )
-//      .asJson
-//      .check(status.is(200))
+  val getCisTaxpayer: HttpRequestBuilder =
+    http("POST Get CIS taxpayer")
+      .post(getCisTaxpayerUrl)
+      .headers(commonHeaders)
+      .body(
+        StringBody(
+          """{
+            |  "taxOfficeNumber": "754",
+            |  "taxOfficeReference": "EZ10800"
+            |}""".stripMargin
+        )
+      )
+      .asJson
+      .check(status.is(200))
 
   val getContractorPrepop: HttpRequestBuilder =
     http("POST Contractor prepopulation")
@@ -100,11 +107,18 @@ object CisRdsRequests extends ServicesConfiguration with BaseRequests {
       .headers(commonHeaders)
       .body(
         StringBody(
-          """{
-            |  "taxOfficeNumber": "754",
-            |  "taxOfficeReference": "EZ10400",
-            |  "accountOfficeReference": "754PA87654400"
-            |}""".stripMargin
+          if (useStub)
+            """{
+              |  "taxOfficeNumber": "754",
+              |  "taxOfficeReference": "EZ10420",
+              |  "accountOfficeReference": "754PA87654400"
+              |}""".stripMargin
+          else
+            """{
+              |  "taxOfficeNumber": "754",
+              |  "taxOfficeReference": "EZ10400",
+              |  "accountOfficeReference": "754PA87654400"
+              |}""".stripMargin
         )
       )
       .asJson
