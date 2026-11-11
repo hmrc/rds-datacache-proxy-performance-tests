@@ -43,6 +43,11 @@ Run smoke test (staging) as follows:
 ```bash
 sbt -Dperftest.runSmokeTest=true -DrunLocal=false gatling:test
 ```
+## Tests - CIS only
+To run performance tests against the stub in your local environment, you must add an additional flag as follows:
+```bash
+sbt -Dperftest.runSmokeTest=true -DrunLocal=true -DuseStub=true gatling:test
+```
 
 ## Scalafmt
 
